@@ -2,13 +2,14 @@
 test "$TRAVIS_BRANCH"
 
 function update-gradle-template () {
-  local GRADLE_VERSION="${TRAVIS_BRANCH##*-}"
+  local GRADLE_VERSION="${TRAVIS_BRANCH#*-}"
 
   ./gradlew -PgradleVersion="$GRADLE_VERSION" wrapper
   ./gradlew -PgradleVersion="$GRADLE_VERSION" wrapper
+  echo "$GRADLE_VERSION" > gradle-version
 
   git checkout -b "$GRADLE_VERSION"
-  git add gradle/wrapper gradlew gradlew.bat
+  git add gradle/wrapper gradlew gradlew.bat gradle-version
   git commit -m "Gradle $GRADLE_VERSION"
   git push origin "$GRADLE_VERSION"
   git push origin --delete "$TRAVIS_BRANCH"

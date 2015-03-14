@@ -5,6 +5,7 @@ jdk: oraclejdk7
 install:
 - git config user.email "$GH_USER_EMAIL"
 - git config user.name  "$GH_USER_NAME"
+- git config core.autocrlf "input"
 - git config credential.helper "store --file=.git/credentials"
 - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
 - git remote remove origin

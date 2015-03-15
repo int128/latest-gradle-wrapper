@@ -22,12 +22,12 @@ function update-gradle-of-user-repository () {
 
   git clone "https://github.com/gradleupdate/${repo}.git" forked
   cd forked
-  git checkout -b "gradle-$version_tobe"
+  git checkout -b gradleupdate
   sed -i -e "s,gradleVersion *= *['\"][0-9a-z\.\-]\+['\"],gradleVersion = '$version_tobe',g" build.gradle
   cp -a ../gradle ../gradlew ../gradlew.bat .
   git add .
   git commit -m "Gradle $version_tobe"
-  git push origin "gradle-$version_tobe"
+  git push origin gradleupdate
   cd ..
 }
 

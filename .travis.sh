@@ -2,23 +2,25 @@
 test "$TRAVIS_BRANCH"
 
 function update-gradle-template () {
-  local GRADLE_VERSION="${TRAVIS_BRANCH#*-}"
+  local version_tobe="${TRAVIS_BRANCH#*-}"
+  local version_asis="$(sed -ne 's,gradleVersion=,,p' gradle.properties)"
 
-  ./gradlew -PgradleVersion="$GRADLE_VERSION" wrapper
-  ./gradlew -PgradleVersion="$GRADLE_VERSION" wrapper
-  echo "$GRADLE_VERSION" > gradle-version
+  if [ "$version_tobe" != "$version_asis" ]; then
+    echo "gradleVersion=$version_tobe" > gradle.properties
+    ./gradlew wrapper
+    ./gradlew wrapper
+    git add .
+    git commit -m "Gradle $version_tobe"
+    git push origin master
+  fi
 
-  git checkout -b "$GRADLE_VERSION"
-  git add gradle/wrapper gradlew gradlew.bat gradle-version
-  git commit -m "Gradle $GRADLE_VERSION"
-  git push origin "$GRADLE_VERSION"
   git push origin --delete "$TRAVIS_BRANCH"
 }
 
 function update-gradle-of-user-repository () {
   local REPO="${TRAVIS_BRANCH#*-}"
   local TEMPLATE_DIR="$PWD"
-  local GRADLE_VERSION="$(cat gradle-version)"
+  local GRADLE_VERSION="$(sed -ne 's,gradleVersion=,,p' gradle.properties)"
   test "$GRADLE_VERSION"
 
   git clone "https://github.com/gradleupdate/${REPO}.git" "$HOME/$REPO"

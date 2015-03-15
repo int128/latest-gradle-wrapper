@@ -27,7 +27,7 @@ function update-gradle-of-user-repository () {
   cp -a ../gradle ../gradlew ../gradlew.bat .
   git add .
   git commit -m "Gradle $version_tobe"
-  git push -u origin gradleupdate
+  git push -u -f origin gradleupdate
   cd ..
 }
 

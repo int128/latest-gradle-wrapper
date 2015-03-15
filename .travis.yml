@@ -14,10 +14,13 @@ install:
 script:
 - ./.travis.sh
 
+after_success:
+- git push origin --delete "$TRAVIS_BRANCH"
+
 branches:
   only:
-    - /^build-/
-    - /^pr-/
+    - /^update-gradle-template/
+    - /^update-gradle-of/
 
 env:
   global:

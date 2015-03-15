@@ -2,7 +2,7 @@
 test "$TRAVIS_BRANCH"
 
 function update-gradle-template () {
-  local version_tobe="${TRAVIS_BRANCH#*-}"
+  local version_tobe="$1"
   local version_asis="$(sed -ne 's,gradleVersion=,,p' gradle.properties)"
 
   if [ "$version_tobe" != "$version_asis" ]; then
@@ -13,12 +13,10 @@ function update-gradle-template () {
     git commit -m "Gradle $version_tobe"
     git push origin master
   fi
-
-  git push origin --delete "$TRAVIS_BRANCH"
 }
 
 function update-gradle-of-user-repository () {
-  local repo="${TRAVIS_BRANCH#*-}"
+  local repo="$1"
   local version_tobe="$(sed -ne 's,gradleVersion=,,p' gradle.properties)"
   test "$version_tobe"
 
@@ -30,12 +28,14 @@ function update-gradle-of-user-repository () {
   git add .
   git commit -m "Gradle $version_tobe"
   git push origin "gradle-$version_tobe"
-
   cd ..
-  git push origin --delete "$TRAVIS_BRANCH"
 }
 
 case "$TRAVIS_BRANCH" in
-  build-*)  update-gradle-template;;
-  pr-*)     update-gradle-of-user-repository;;
+  update-gradle-template/*)
+    update-gradle-template "${TRAVIS_BRANCH#update-gradle-template/}"
+    ;;
+  update-gradle-of/*)
+    update-gradle-of-user-repository "${TRAVIS_BRANCH#update-gradle-of/}"
+    ;;
 esac

@@ -29,7 +29,9 @@ function update-gradle-of-user-repository () {
   hub commit -m "Gradle $version_tobe"
   hub fork
   hub push "$GH_USER" "gradle-$version_tobe"
-  hub pull-request -m "Gradle $version_tobe"
+
+  sed -i -e "s,GRADLE_VERSION,$version_tobe,g" ../pull-request.md
+  hub pull-request -F ../pull-request.md
   cd ..
 }
 

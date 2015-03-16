@@ -9,9 +9,9 @@ function update-gradle-template () {
     echo "gradleVersion=$version_tobe" > gradle.properties
     ./gradlew wrapper
     ./gradlew wrapper
-    git add .
-    git commit -m "Gradle $version_tobe"
-    git push origin master
+    hub add .
+    hub commit -m "Gradle $version_tobe"
+    hub push origin master
   fi
 }
 
@@ -20,22 +20,24 @@ function update-gradle-of-user-repository () {
   local version_tobe="$(sed -ne 's,gradleVersion=,,p' gradle.properties)"
   test "$version_tobe"
 
-  git clone "https://github.com/gradleupdate/${repo}.git" forked
-  cd forked
-  git checkout -b gradleupdate
+  hub clone "$repo" _
+  cd _
+  hub checkout -b "gradle-$version_tobe"
   sed -i -e "s,gradleVersion *= *['\"][0-9a-z\.\-]\+['\"],gradleVersion = '$version_tobe',g" build.gradle
   cp -a ../gradle ../gradlew ../gradlew.bat .
-  git add .
-  git commit -m "Gradle $version_tobe"
-  git push -u -f origin gradleupdate
+  hub add .
+  hub commit -m "Gradle $version_tobe"
+  hub fork
+  hub push "$GH_USER" "gradle-$version_tobe"
+  hub pull-request -m "Gradle $version_tobe"
   cd ..
 }
 
 case "$TRAVIS_BRANCH" in
-  update-gradle-template/*)
-    update-gradle-template "${TRAVIS_BRANCH#update-gradle-template/}"
+  update-gradle-template-*)
+    update-gradle-template "${TRAVIS_BRANCH#update-gradle-template-}"
     ;;
-  update-gradle-of/*)
-    update-gradle-of-user-repository "${TRAVIS_BRANCH#update-gradle-of/}"
+  update-gradle-of-*)
+    update-gradle-of-user-repository "${TRAVIS_BRANCH#update-gradle-of-}"
     ;;
 esac

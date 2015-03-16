@@ -3,30 +3,34 @@ language: java
 jdk: oraclejdk7
 
 install:
-- git config --global user.email "$GH_USER_EMAIL"
-- git config --global user.name  "$GH_USER_NAME"
-- git config --global core.autocrlf "input"
-- git config --global credential.helper "store --file=$HOME/.gitcredentials"
-- echo "https://${GH_TOKEN}:@github.com" > $HOME/.gitcredentials
-- git remote remove origin
-- git remote add origin "https://github.com/${TRAVIS_REPO_SLUG}.git"
+- curl -LO "https://github.com/github/hub/releases/download/v$HUB/hub-linux-amd64-$HUB.tar.gz"
+- tar -C "$HOME" -zxf "hub-linux-amd64-$HUB.tar.gz"
+- export PATH="$PATH:$HOME/hub-linux-amd64-$HUB"
 
-- curl -LO https://github.com/github/hub/releases/download/v2.2.0/hub-linux-amd64-2.2.0.tar.gz
-- tar -C "$HOME" -zxf hub-linux-amd64-2.2.0.tar.gz
-- export PATH="$PATH:$HOME/hub-linux-amd64-2.2.0"
-- hub --version
+- mkdir -p "$HOME/.config"
+- echo "https://${GH_TOKEN}:@github.com" > "$HOME/.config/git-credential"
+- sed -e "s,GH_TOKEN,$GH_TOKEN," -e "s,GH_USER,$GH_USER," config-hub > "$HOME/.config/hub"
+
+- hub config --global user.email "$GH_USER_EMAIL"
+- hub config --global user.name  "$GH_USER_NAME"
+- hub config --global core.autocrlf "input"
+- hub config --global credential.helper "store --file=$HOME/.config/git-credential"
+- hub config --global hub.protocol "https"
+- hub remote set-url origin "$TRAVIS_REPO_SLUG"
 
 script:
 - ./.travis.sh
 
 after_success:
-- git push origin --delete "$TRAVIS_BRANCH"
+- hub push origin --delete "$TRAVIS_BRANCH"
 
 branches:
   only:
-    - /^update-gradle-template/
-    - /^update-gradle-of/
+  - master
+  - /^update-gradle-template-/
+  - /^update-gradle-of-/
 
 env:
   global:
   - TERM=dumb
+  - HUB=2.2.0

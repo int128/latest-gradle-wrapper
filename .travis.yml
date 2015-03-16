@@ -11,6 +11,11 @@ install:
 - git remote remove origin
 - git remote add origin "https://github.com/${TRAVIS_REPO_SLUG}.git"
 
+- curl -LO https://github.com/github/hub/releases/download/v2.2.0/hub-linux-amd64-2.2.0.tar.gz
+- tar -C "$HOME" -zxf hub-linux-amd64-2.2.0.tar.gz
+- export PATH="$PATH:$HOME/hub-linux-amd64-2.2.0"
+- hub --version
+
 script:
 - ./.travis.sh
 

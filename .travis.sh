@@ -6,12 +6,15 @@ function update-gradle-template () {
   local version_asis="$(sed -ne 's,gradleVersion=,,p' gradle.properties)"
 
   if [ "$version_tobe" != "$version_asis" ]; then
+    hub clone "$TRAVIS_REPO_SLUG" _
+    cd _
     echo "gradleVersion=$version_tobe" > gradle.properties
     ./gradlew wrapper
     ./gradlew wrapper
     hub add .
     hub commit -m "Gradle $version_tobe"
     hub push origin master
+    cd ..
   fi
 }
 

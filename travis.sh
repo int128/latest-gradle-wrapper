@@ -10,8 +10,8 @@ function bump_version () {
     echo "Gradle Wrapper is up-to-date $version, do nothing"
   else
     echo "Gradle Wrapper is out-of-date $version, updating"
-    ./gradlew -PgradleVersion="$version" wrapper
-    ./gradlew -PgradleVersion="$version" wrapper
+    ./gradlew wrapper --gradle-version "$version"
+    ./gradlew wrapper --gradle-version "$version"
     ./gradlew --version
     test "$(show_version)" = "$version"
     echo "Gradle Wrapper is now up-to-date $version, commit and push"

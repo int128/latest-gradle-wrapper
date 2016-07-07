@@ -1,37 +1,42 @@
 language: java
 
-env:
-  global:
-  - HUB=2.2.0
-
 install:
-- curl -LO "https://github.com/github/hub/releases/download/v$HUB/hub-linux-amd64-$HUB.tar.gz"
-- tar -C "$HOME" -zxf "hub-linux-amd64-$HUB.tar.gz"
-- export PATH="$PATH:$HOME/hub-linux-amd64-$HUB"
-
-- mkdir -p "$HOME/.config"
-- echo "https://${GH_TOKEN}:@github.com" > "$HOME/.config/git-credential"
-- echo "github.com:" > "$HOME/.config/hub"
-- echo "-" "oauth_token:" "$GH_TOKEN" >> "$HOME/.config/hub"
-
-- hub config --global user.email "$GH_USER_EMAIL"
-- hub config --global user.name  "$GH_USER_NAME"
-- hub config --global hub.protocol "https"
-- hub config --global hub.user "$GH_USER"
-- hub config --global credential.helper "store --file=$HOME/.config/git-credential"
-- hub config --global core.autocrlf "input"
-- hub config --global push.default "current"
-
-- unset GH_USER
-- unset GH_USER_EMAIL
-- unset GH_USER_NAME
+- echo "https://${GH_TOKEN}:@github.com" > "$HOME/.git-credentials"
 - unset GH_TOKEN
 
-# reget to fetch the default branch
+- git config --global user.email "$GH_USER_EMAIL"
+- git config --global user.name  "$GH_USER_NAME"
+- git config --global credential.helper store
+- git config --global core.autocrlf input
+- git config --global push.default current
+
 - rm -fr "$TRAVIS_BUILD_DIR"
 - mkdir "$TRAVIS_BUILD_DIR"
 - cd "$TRAVIS_BUILD_DIR"
-- hub clone "$TRAVIS_REPO_SLUG" .
+- git clone "https://github.com/$TRAVIS_REPO_SLUG" .
 
 script:
-- ./travis.sh
+- ./gradlew -v
+- |
+  function gradle_version () {
+    ./gradlew -v | sed -ne '/^Gradle/s/^Gradle //p'
+  }
+  if [ "$TRAVIS_BRANCH" = "master" ]; then
+    echo 'Do nothing at master branch'
+  elif [ "$(gradle_version)" = "$TRAVIS_BRANCH" ]; then
+    echo "Gradle Wrapper is up-to-date"
+    git push origin --delete "$TRAVIS_BRANCH" 
+  else
+    echo "Gradle Wrapper is out-of-date"
+    ./gradlew wrapper --gradle-version "$TRAVIS_BRANCH"
+    ./gradlew wrapper --gradle-version "$TRAVIS_BRANCH"
+    ./gradlew -v
+    if [ "$(gradle_version)" != "$TRAVIS_BRANCH" ]; then
+      exit 1
+    fi
+    git add .
+    git commit -m "Gradle $TRAVIS_BRANCH"
+    git push origin
+    git push origin --delete "$TRAVIS_BRANCH" 
+  fi
+

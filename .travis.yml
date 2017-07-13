@@ -1,4 +1,3 @@
-sudo: false
 language: java
 
 install:
@@ -11,20 +10,23 @@ install:
 - git config --global core.autocrlf input
 - git config --global push.default current
 
-- rm -fr "$TRAVIS_BUILD_DIR"
-- mkdir "$TRAVIS_BUILD_DIR"
-- cd "$TRAVIS_BUILD_DIR"
-- git clone --branch="$TRAVIS_BRANCH" --depth=1 "https://github.com/$TRAVIS_REPO_SLUG" .
-
 script:
 - |
-  ./gradlew -v
-  ./gradlew wrapper
-  ./gradlew wrapper
-  ./gradlew -v
-  ./gradlew -v | egrep ^Gradle > GRADLE_VERSION
-  git add .
-  if [ "$(git status --porcelain)" ]; then
-    git commit -F GRADLE_VERSION
-    git push origin
+  if [ "$TRAVIS_BRANCH" ]; then
+    rm -fr "$TRAVIS_BUILD_DIR"
+    mkdir "$TRAVIS_BUILD_DIR"
+    cd "$TRAVIS_BUILD_DIR"
+    git clone --branch="$TRAVIS_BRANCH" --depth=1 "https://github.com/$TRAVIS_REPO_SLUG" .
+
+    ./gradlew -v
+    ./gradlew wrapper
+    ./gradlew wrapper
+    ./gradlew -v
+    ./gradlew -v | egrep ^Gradle > GRADLE_VERSION
+
+    git add .
+    if [ "$(git status --porcelain)" ]; then
+      git commit -F GRADLE_VERSION
+      git push origin
+    fi
   fi

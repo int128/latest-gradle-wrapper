@@ -1,11 +1,11 @@
 language: java
 
 install:
-- echo "https://${GH_TOKEN}:@github.com" > "$HOME/.git-credentials"
+- echo "https://${GITHUB_TOKEN}:@github.com" > "$HOME/.git-credentials"
 - unset GH_TOKEN
 
-- git config --global user.email "$GH_USER_EMAIL"
-- git config --global user.name  "$GH_USER_NAME"
+- git config --global user.email gradleupdate@users.noreply.github.com
+- git config --global user.name  gradleupdate
 - git config --global credential.helper store
 - git config --global core.autocrlf input
 - git config --global push.default current
@@ -13,30 +13,14 @@ install:
 - rm -fr "$TRAVIS_BUILD_DIR"
 - mkdir "$TRAVIS_BUILD_DIR"
 - cd "$TRAVIS_BUILD_DIR"
-- git clone "https://github.com/$TRAVIS_REPO_SLUG" .
+- git clone --branch="$TRAVIS_BRANCH" --depth=1 "https://github.com/$TRAVIS_REPO_SLUG" .
 
 script:
 - ./gradlew -v
-- |
-  function gradle_version () {
-    ./gradlew -v | sed -ne '/^Gradle/s/^Gradle //p'
-  }
-  if [ "$TRAVIS_BRANCH" = "master" ]; then
-    echo 'Do nothing at master branch'
-  elif [ "$(gradle_version)" = "$TRAVIS_BRANCH" ]; then
-    echo "Gradle Wrapper is up-to-date"
-    git push origin --delete "$TRAVIS_BRANCH" 
-  else
-    echo "Gradle Wrapper is out-of-date"
-    ./gradlew wrapper --gradle-version "$TRAVIS_BRANCH"
-    ./gradlew wrapper --gradle-version "$TRAVIS_BRANCH"
-    ./gradlew -v
-    if [ "$(gradle_version)" != "$TRAVIS_BRANCH" ]; then
-      exit 1
-    fi
-    git add .
-    git commit -m "Gradle $TRAVIS_BRANCH"
-    git push origin
-    git push origin --delete "$TRAVIS_BRANCH" 
-  fi
-
+- ./gradlew wrapper
+- ./gradlew wrapper
+- ./gradlew -v
+- ./gradlew -v | egrep ^Gradle > GRADLE_VERSION
+- git add .
+- git commit -F GRADLE_VERSION
+- git push origin

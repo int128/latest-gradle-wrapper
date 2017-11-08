@@ -22,11 +22,10 @@ script:
     ./gradlew wrapper
     ./gradlew wrapper
     ./gradlew -v
-    ./gradlew -v | egrep ^Gradle > GRADLE_VERSION
 
     git add .
     if [ "$(git status --porcelain)" ]; then
-      git commit -F GRADLE_VERSION
+      git commit -m "Bump to $(./gradlew -v | egrep ^Gradle)"
       git push origin
     fi
   fi

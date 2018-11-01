@@ -2,7 +2,7 @@ language: java
 
 install:
 - echo "https://${GITHUB_TOKEN}:@github.com" > "$HOME/.git-credentials"
-- unset GH_TOKEN
+- unset GITHUB_TOKEN
 
 - git config --global user.email gradleupdate@users.noreply.github.com
 - git config --global user.name  gradleupdate

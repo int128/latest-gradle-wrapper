@@ -1,4 +1,5 @@
 language: java
+jdk: openjdk11
 
 install:
 - echo "https://${GITHUB_TOKEN}:@github.com" > "$HOME/.git-credentials"

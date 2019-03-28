@@ -2,31 +2,21 @@ language: java
 jdk: openjdk11
 
 install:
-- echo "https://${GITHUB_TOKEN}:@github.com" > "$HOME/.git-credentials"
-- unset GITHUB_TOKEN
-
-- git config --global user.email gradleupdate@users.noreply.github.com
-- git config --global user.name  gradleupdate
-- git config --global credential.helper store
-- git config --global core.autocrlf input
-- git config --global push.default current
+- mkdir -p $HOME/bin
+- curl -L -o $HOME/bin/ghcp https://github.com/int128/ghcp/releases/download/v1.3.0/ghcp_linux_amd64
+- chmod +x $HOME/bin/ghcp
+- export PATH="$HOME/bin:$PATH"
 
 script:
+- ./gradlew -v
+- ./gradlew wrapper
+- ./gradlew wrapper
+- ./gradlew -v
+
 - |
-  if [ "$TRAVIS_BRANCH" ]; then
-    rm -fr "$TRAVIS_BUILD_DIR"
-    mkdir "$TRAVIS_BUILD_DIR"
-    cd "$TRAVIS_BUILD_DIR"
-    git clone --branch="$TRAVIS_BRANCH" --depth=1 "https://github.com/$TRAVIS_REPO_SLUG" .
-
-    ./gradlew -v
-    ./gradlew wrapper
-    ./gradlew wrapper
-    ./gradlew -v
-
-    git add .
-    if [ "$(git status --porcelain)" ]; then
-      git commit -m "Bump to $(./gradlew -v | egrep ^Gradle)"
-      git push origin
-    fi
-  fi
+  ghcp -u "${TRAVIS_REPO_SLUG%/*}" -r "${TRAVIS_REPO_SLUG#*/}" -b "$TRAVIS_BRANCH" \
+    -m "Bump to $(./gradlew -v | egrep ^Gradle)" \
+    gradle/ \
+    gradlew \
+    gradlew.bat \
+    README.md

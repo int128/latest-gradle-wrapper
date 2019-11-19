@@ -6,9 +6,9 @@
 This has the latest version of [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html).
 It is continuously updated by Travis CI.
 
-## Gradle 6.0
+## Gradle 6.0.1
 
 ✅ Checksum of `gradle/wrapper/gradle-wrapper.jar`:
 
 - Current = `28b330c20a9a73881dfe9702df78d4d78bf72368e8906c70080ab6932462fe9e`
-- [Latest](https://services.gradle.org/distributions/gradle-6.0-wrapper.jar.sha256) = `28b330c20a9a73881dfe9702df78d4d78bf72368e8906c70080ab6932462fe9e`
+- [Latest](https://services.gradle.org/distributions/gradle-6.0.1-wrapper.jar.sha256) = `28b330c20a9a73881dfe9702df78d4d78bf72368e8906c70080ab6932462fe9e`

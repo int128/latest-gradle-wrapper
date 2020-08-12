@@ -8,7 +8,7 @@ It is continuously updated by Travis CI.
 
 ## Gradle 6.6
 
-❌ Checksum of `gradle/wrapper/gradle-wrapper.jar`:
+✅ Checksum of `gradle/wrapper/gradle-wrapper.jar`:
 
-- Current = `70239e6ca1f0d5e3b2808ef6d82390cf9ad58d3a3a0d271677a51d1b89475857`
+- Current = `e996d452d2645e70c01c11143ca2d3742734a28da2bf61f25c82bdc288c9e637`
 - [Latest](https://services.gradle.org/distributions/gradle-6.6-wrapper.jar.sha256) = `e996d452d2645e70c01c11143ca2d3742734a28da2bf61f25c82bdc288c9e637`
